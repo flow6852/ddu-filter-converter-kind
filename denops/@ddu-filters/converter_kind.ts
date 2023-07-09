@@ -7,17 +7,17 @@ import {
 import { Denops } from "https://deno.land/x/ddu_vim@v3.3.3/deps.ts";
 
 type KindKeyReplace = {
-    oldKey: unknown;
-    newKey: unknown;
+    oldKey: string;
+    newKey: string;
 };
 
 type Params = {
     kind: string,
-    kindKeyReplace: KindKeyReplace // 
-    options: KindOptions,
-    otionsOverride: boolean,
-    params: unknown, // ?
-    paramsOverride: boolean, // ?
+    kindKeyReplace?: Array<KindKeyReplace> // 
+    options?: KindOptions, // can change?
+    otionsOverride?: boolean,
+    params?: unknown, // can change?
+    paramsOverride?: boolean, // ?
 };
 
 export class Filter extends BaseFilter<Params> {
@@ -37,7 +37,12 @@ export class Filter extends BaseFilter<Params> {
 
   override params(): Params {
     return {
-        kind: "base"
+        kind: "base",
+        kindKeyReplace: undefined,
+        options: undefined,
+        otionsOverride: undefined,
+        params: undefined,
+        paramsOverride: undefined
     };
   }
 }
