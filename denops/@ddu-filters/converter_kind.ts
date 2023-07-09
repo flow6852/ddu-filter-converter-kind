@@ -12,8 +12,8 @@ type KindKeyReplace = {
 };
 
 type Params = {
-    kind: string,
-    kindKeyReplace?: Array<KindKeyReplace> // 
+    kind?: string,
+    kindKeyReplaces?: Array<KindKeyReplace> // 
     options?: KindOptions, // can change?
     otionsOverride?: boolean,
     params?: unknown, // can change?
@@ -30,15 +30,20 @@ export class Filter extends BaseFilter<Params> {
     items: DduItem[];
   }): Promise<DduItem[]> {
     for (const item of args.items) {
-        item.kind = args.filterParams.kind;
+        if (args.filterParams.kind != undefined) item.kind = args.filterParams.kind;
+        // if (args.filterParams.kindKeyReplaces) { 
+        //     for (const replacer of args.filterParams.kindKeyReplaces as Array<KindKeyReplace>){
+        //         item.action[replacer.newKey] = item.action[replacer.oldKey] // "." is ignored for using dict member? then format : ([0-9a-zA-Z]*.)*
+        //     }
+        // }
     }
     return Promise.resolve(args.items);
   }
 
   override params(): Params {
     return {
-        kind: "base",
-        kindKeyReplace: undefined,
+        kind: undefined,
+        kindKeyReplaces: undefined,
         options: undefined,
         otionsOverride: undefined,
         params: undefined,
