@@ -6,6 +6,10 @@ import {
 } from "https://deno.land/x/ddu_vim@v3.3.3/types.ts";
 import { Denops } from "https://deno.land/x/ddu_vim@v3.3.3/deps.ts";
 
+type ActionData = {
+    [K in string]: string
+}
+
 type KindKeyReplace = {
   oldKey: string;
   newKey: string;
@@ -33,11 +37,19 @@ export class Filter extends BaseFilter<Params> {
       if (args.filterParams.kind != undefined) {
         item.kind = args.filterParams.kind;
       }
-      // if (args.filterParams.kindKeyReplaces) {
-      //     for (const replacer of args.filterParams.kindKeyReplaces as Array<KindKeyReplace>){
-      //         item.action[replacer.newKey] = item.action[replacer.oldKey] // "." is ignored for using dict member? then format : ([0-9a-zA-Z]*.)*
-      //     }
-      // }
+      if (args.filterParams.kindKeyReplaces) {
+        for (
+          const replacer of args.filterParams.kindKeyReplaces as Array<
+            KindKeyReplace
+          >
+        ) {
+          setActionData(
+            item.action as ActionData,
+            replacer.newKey,
+            getActionData(item.action as ActionData, replacer.oldKey),
+          );
+        }
+      }
     }
     return Promise.resolve(args.items);
   }
@@ -54,6 +66,19 @@ export class Filter extends BaseFilter<Params> {
   }
 }
 
-function parseKeys(keys: string): Array<string> {
-    return keys.split
+function setActionData(item: unknown, keys: string, setData: unknown): void {
+  const parsed = keys.split(".");
+  const root = parsed.pop();
+  if (root == undefined) return
+  else if (parsed.length < 1) item[root] = setData;
+  else setActionData(item[root], parsed.join("."), setData);
+}
+
+function getActionData(item: unknown, keys: string): unknown {
+  const parsed: Array<string> = keys.split(".");
+  const root = parsed.pop();
+
+  if (root == undefined) return ""
+  else if (parsed.length < 1) return item[root];
+  else return getActionData(item[root], parsed.join("."));
 }
