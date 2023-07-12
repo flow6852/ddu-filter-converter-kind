@@ -66,6 +66,7 @@ export class Filter extends BaseFilter<Params> {
   }
 }
 
+// item をunknownにしているけどこれやめたい
 function setActionData(item: unknown, keys: string, setData: unknown): void {
   const parsed = keys.split(".");
   const root = parsed.pop();
