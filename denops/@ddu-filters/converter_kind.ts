@@ -1,27 +1,22 @@
 import {
   BaseFilter,
   DduItem,
-  KindOptions,
   SourceOptions,
 } from "https://deno.land/x/ddu_vim@v3.3.3/types.ts";
 import { Denops } from "https://deno.land/x/ddu_vim@v3.3.3/deps.ts";
 
 type ActionData = {
-    [K in string]: string
-}
+  [K in string]: string;
+};
 
-type KindKeyReplace = {
+type KindKeyCopy = {
   oldKey: string;
   newKey: string;
 };
 
 type Params = {
   kind?: string;
-  kindKeyReplaces?: Array<KindKeyReplace>; //
-  options?: KindOptions; // can change?
-  otionsOverride?: boolean;
-  params?: unknown; // can change?
-  paramsOverride?: boolean; // ?
+  kindKeyCopy?: Array<KindKeyCopy>; //
 };
 
 export class Filter extends BaseFilter<Params> {
@@ -37,16 +32,16 @@ export class Filter extends BaseFilter<Params> {
       if (args.filterParams.kind != undefined) {
         item.kind = args.filterParams.kind;
       }
-      if (args.filterParams.kindKeyReplaces) {
+      if (args.filterParams.kindKeyCopy) {
         for (
-          const replacer of args.filterParams.kindKeyReplaces as Array<
-            KindKeyReplace
+          const copy of args.filterParams.kindKeyCopy as Array<
+            KindKeyCopy
           >
         ) {
           setActionData(
             item.action as ActionData,
-            replacer.newKey,
-            getActionData(item.action as ActionData, replacer.oldKey),
+            copy.newKey,
+            getActionData(item.action as ActionData, copy.oldKey),
           );
         }
       }
@@ -57,7 +52,7 @@ export class Filter extends BaseFilter<Params> {
   override params(): Params {
     return {
       kind: undefined,
-      kindKeyReplaces: undefined,
+      kindKeyCopy: undefined,
       options: undefined,
       otionsOverride: undefined,
       params: undefined,
@@ -70,7 +65,7 @@ export class Filter extends BaseFilter<Params> {
 function setActionData(item: unknown, keys: string, setData: unknown): void {
   const parsed = keys.split(".");
   const root = parsed.pop();
-  if (root == undefined) return
+  if (root == undefined) return;
   else if (parsed.length < 1) item[root] = setData;
   else setActionData(item[root], parsed.join("."), setData);
 }
@@ -79,7 +74,7 @@ function getActionData(item: unknown, keys: string): unknown {
   const parsed: Array<string> = keys.split(".");
   const root = parsed.pop();
 
-  if (root == undefined) return ""
+  if (root == undefined) return "";
   else if (parsed.length < 1) return item[root];
   else return getActionData(item[root], parsed.join("."));
 }
