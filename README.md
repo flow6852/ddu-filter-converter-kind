@@ -1,4 +1,4 @@
-# [WIP] ddu-filter-converter_kind
+# ddu-filter-converter_kind
 
 converter for kind
 
